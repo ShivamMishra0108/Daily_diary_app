@@ -2,10 +2,10 @@ import 'package:daily_diary_app/widgets/calender_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../main.dart';
-import '../providers/task_provider.dart';
-import '../widgets/month_slider.dart';
-import 'notes_screen.dart';
+import '../../main.dart';
+import '../../providers/task_provider.dart';
+import '../../widgets/month_slider.dart';
+import '../notes_screen.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({Key? key}) : super(key: key);
@@ -35,11 +35,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   DateTime _getDateForPage(int page) {
     final monthOffset = page - _initialPage;
-    return DateTime(
-      _currentDate.year,
-      _currentDate.month + monthOffset,
-      1,
-    );
+    return DateTime(_currentDate.year, _currentDate.month + monthOffset, 1);
   }
 
   void _onPageChanged(int page) {
@@ -65,9 +61,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void _openNotesScreen(DateTime date) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => NotesScreen(selectedDate: date),
-      ),
+      MaterialPageRoute(builder: (context) => NotesScreen(selectedDate: date)),
     );
   }
 
@@ -76,6 +70,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final theme = Theme.of(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
     final taskProvider = Provider.of<TaskProvider>(context);
+
+    // Helper widget for color box + label
+    Widget _buildColorLegend(Color color, String label) {
+      return Row(
+        children: [
+          Container(
+            width: 16,
+            height: 16,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(label, style: Theme.of(context).textTheme.bodyMedium),
+        ],
+      );
+    }
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -92,10 +104,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Calendar',
-                        style: theme.textTheme.displayLarge,
-                      ),
+                      Text('Calendar', style: theme.textTheme.displayLarge),
                       const SizedBox(height: 4),
                       Text(
                         DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now()),
@@ -184,10 +193,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Selected Date',
@@ -195,16 +206,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        DateFormat('EEEE, MMMM d, yyyy')
-                                            .format(_selectedDate!),
-                                        style: theme.textTheme.displayMedium?.copyWith(
-                                          fontSize: 18,
-                                        ),
+                                        DateFormat(
+                                          'EEEE, MMMM d, yyyy',
+                                        ).format(_selectedDate!),
+                                        style: theme.textTheme.displayMedium
+                                            ?.copyWith(fontSize: 18),
                                       ),
                                     ],
                                   ),
                                   ElevatedButton.icon(
-                                    onPressed: () => _openNotesScreen(_selectedDate!),
+                                    onPressed: () =>
+                                        _openNotesScreen(_selectedDate!),
                                     icon: const Icon(Icons.note_add, size: 18),
                                     label: const Text('Tasks'),
                                     style: ElevatedButton.styleFrom(
@@ -227,24 +239,35 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   child: Row(
                                     children: [
                                       Icon(
-                                        taskProvider.isDateCompleted(_selectedDate!)
+                                        taskProvider.isDateCompleted(
+                                              _selectedDate!,
+                                            )
                                             ? Icons.check_circle
                                             : Icons.pending,
                                         size: 16,
-                                        color: taskProvider.isDateCompleted(_selectedDate!)
+                                        color:
+                                            taskProvider.isDateCompleted(
+                                              _selectedDate!,
+                                            )
                                             ? const Color(0xFF4CAF50)
                                             : theme.primaryColor,
                                       ),
                                       const SizedBox(width: 6),
                                       Text(
-                                        taskProvider.isDateCompleted(_selectedDate!)
+                                        taskProvider.isDateCompleted(
+                                              _selectedDate!,
+                                            )
                                             ? 'All tasks completed!'
                                             : '${taskProvider.getTasksForDate(_selectedDate!).length} task(s)',
-                                        style: theme.textTheme.bodyMedium?.copyWith(
-                                          color: taskProvider.isDateCompleted(_selectedDate!)
-                                              ? const Color(0xFF4CAF50)
-                                              : null,
-                                        ),
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              color:
+                                                  taskProvider.isDateCompleted(
+                                                    _selectedDate!,
+                                                  )
+                                                  ? const Color(0xFF4CAF50)
+                                                  : null,
+                                            ),
                                       ),
                                     ],
                                   ),
@@ -258,6 +281,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
 
               const SizedBox(height: 16),
+
+              // Place this above the Action Buttons Row
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildColorLegend(Colors.green, "Completed"),
+                    _buildColorLegend(Colors.orange, "Pending"),
+                    _buildColorLegend(Colors.yellowAccent, "On streak"),
+                    _buildColorLegend(Colors.grey, "No Tasks"),
+                  ],
+                ),
+              ),
 
               // Action Buttons
               Row(

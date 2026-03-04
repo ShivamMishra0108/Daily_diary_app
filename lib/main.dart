@@ -1,4 +1,5 @@
-import 'package:daily_diary_app/screens/calender_screen.dart';
+import 'package:daily_diary_app/screens/main_screen.dart';
+import 'package:daily_diary_app/screens/nav_screens/calender_screen.dart';
 import 'package:daily_diary_app/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeProvider.themeMode,
-            home: const CalendarScreen(),
+            home: const MainScreen(),
           );
         },
       ),
@@ -37,9 +38,7 @@ class MyApp extends StatelessWidget {
 
 class ThemeProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.light;
-
   ThemeMode get themeMode => _themeMode;
-
   bool get isDarkMode => _themeMode == ThemeMode.dark;
 
   void toggleTheme() {
