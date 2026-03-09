@@ -1,5 +1,7 @@
+import 'package:daily_diary_app/providers/plan_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class Plan {
   final String name;
@@ -44,7 +46,8 @@ class _PlanScreenState extends State<PlanScreen> {
   Future<void> _pickDate({required bool isStart}) async {
     DateTime initialDate = isStart
         ? (_startDate ?? DateTime.now())
-        : (_endDate ?? (_startDate ?? DateTime.now()).add(const Duration(days: 1)));
+        : (_endDate ??
+              (_startDate ?? DateTime.now()).add(const Duration(days: 1)));
 
     DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -96,9 +99,7 @@ class _PlanScreenState extends State<PlanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Plan"),
-      ),
+      appBar: AppBar(title: const Text("Plan")),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -142,8 +143,9 @@ class _PlanScreenState extends State<PlanScreen> {
                 ),
                 const Spacer(),
                 ElevatedButton(
-                  onPressed:
-                      _startDate == null ? null : () => _pickDate(isStart: false),
+                  onPressed: _startDate == null
+                      ? null
+                      : () => _pickDate(isStart: false),
                   child: const Text("End Date"),
                 ),
               ],
@@ -151,7 +153,6 @@ class _PlanScreenState extends State<PlanScreen> {
 
             const SizedBox(height: 12),
 
-            /// Total Days
             if (_startDate != null && _endDate != null)
               Text(
                 "Total Days: $_totalDays",
@@ -163,15 +164,19 @@ class _PlanScreenState extends State<PlanScreen> {
 
             const SizedBox(height: 16),
 
-            /// Save Button
             ElevatedButton(
-              onPressed: _savePlan,
+              onPressed: () {
+                Provider.of<PlanProvider>(
+                  context,
+                  listen: false,
+                ).addPlan("My Plan", _startDate!, _endDate!);
+
+                Navigator.pop(context);
+              },
               child: const Text("Save Plan"),
             ),
-
             const SizedBox(height: 20),
 
-            /// Plan List
             Expanded(
               child: _plans.isEmpty
                   ? const Center(child: Text("No Plans Yet"))

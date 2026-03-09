@@ -95,7 +95,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final theme = Theme.of(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
     final taskProvider = Provider.of<TaskProvider>(context);
-    final planProvider = Provider.of<PlanProvider>(context);
+  
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,

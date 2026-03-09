@@ -1,10 +1,12 @@
+import 'package:daily_diary_app/providers/plan_provider.dart';
+import 'package:daily_diary_app/providers/task_provider.dart';
 import 'package:daily_diary_app/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../providers/task_provider.dart';
 
 class CalendarGrid extends StatelessWidget {
+
   final DateTime currentDate;
   final DateTime? selectedDate;
   final Function(DateTime) onDateSelected;
@@ -17,30 +19,32 @@ class CalendarGrid extends StatelessWidget {
   }) : super(key: key);
 
   List<DateTime> _getDaysInMonth(DateTime date) {
-    final firstDayOfMonth = DateTime(date.year, date.month, 1);
-    final lastDayOfMonth = DateTime(date.year, date.month + 1, 0);
-    
-    final firstWeekday = firstDayOfMonth.weekday % 7;
-    final startDate = firstDayOfMonth.subtract(Duration(days: firstWeekday));
-    
-    final lastWeekday = lastDayOfMonth.weekday % 7;
-    final endDate = lastDayOfMonth.add(Duration(days: 6 - lastWeekday));
-    
-    final days = <DateTime>[];
+    final firstDay = DateTime(date.year, date.month, 1);
+    final lastDay = DateTime(date.year, date.month + 1, 0);
+
+    final startOffset = firstDay.weekday % 7;
+    final startDate = firstDay.subtract(Duration(days: startOffset));
+
+    final endOffset = 6 - (lastDay.weekday % 7);
+    final endDate = lastDay.add(Duration(days: endOffset));
+
+    List<DateTime> days = [];
+
     for (var day = startDate;
         day.isBefore(endDate.add(const Duration(days: 1)));
         day = day.add(const Duration(days: 1))) {
       days.add(day);
     }
-    
+
     return days;
   }
 
-  bool _isSameDay(DateTime? date1, DateTime? date2) {
-    if (date1 == null || date2 == null) return false;
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
+  bool _isSameDay(DateTime? a, DateTime? b) {
+    if (a == null || b == null) return false;
+
+    return a.year == b.year &&
+        a.month == b.month &&
+        a.day == b.day;
   }
 
   bool _isToday(DateTime date) {
@@ -49,21 +53,28 @@ class CalendarGrid extends StatelessWidget {
   }
 
   bool _isCurrentMonth(DateTime date) {
-    return date.month == currentDate.month && date.year == currentDate.year;
+    return date.month == currentDate.month &&
+        date.year == currentDate.year;
   }
 
   @override
   Widget build(BuildContext context) {
+
     final theme = Theme.of(context);
+
     final taskProvider = Provider.of<TaskProvider>(context);
+    final planProvider = Provider.of<PlanProvider>(context);
+
     final days = _getDaysInMonth(currentDate);
-    final weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    final weekDays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          // Week day headers
+
+          /// Week headers
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: weekDays.map((day) {
@@ -79,109 +90,119 @@ class CalendarGrid extends StatelessWidget {
               );
             }).toList(),
           ),
+
           const SizedBox(height: 16),
 
-          // Calendar days grid
+          /// Calendar Grid
           Expanded(
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+
+              gridDelegate:
+                  const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 7,
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
               ),
+
               itemCount: days.length,
+
               itemBuilder: (context, index) {
+
                 final day = days[index];
+
                 final isCurrentMonth = _isCurrentMonth(day);
                 final isToday = _isToday(day);
                 final isSelected = _isSameDay(day, selectedDate);
-                final hasCompletedTasks = taskProvider.isDateCompleted(day);
-                final hasTasks = taskProvider.hasTasksForDate(day);
 
-                // Determine the color based on task completion
+                final hasTasks = taskProvider.hasTasksForDate(day);
+                final isCompleted = taskProvider.isDateCompleted(day);
+
+                final hasPlan = planProvider.isDateInPlan(day);
+
                 Color? backgroundColor;
                 Color? borderColor;
                 Color? textColor;
 
+                /// Selected
                 if (isSelected) {
-                  backgroundColor = hasCompletedTasks && hasTasks
-                      ? AppTheme.completedGreen
-                      : theme.primaryColor;
+                  backgroundColor = theme.primaryColor;
                   textColor = Colors.white;
-                } else if (isToday) {
-                  backgroundColor = theme.colorScheme.surface;
-                  borderColor = hasCompletedTasks && hasTasks
-                      ? AppTheme.completedGreen
-                      : theme.primaryColor;
-                  textColor = hasCompletedTasks && hasTasks
-                      ? AppTheme.completedGreen
-                      : theme.primaryColor;
-                } else if (hasCompletedTasks && hasTasks) {
-                  backgroundColor = AppTheme.completedGreen.withOpacity(0.2);
-                  textColor = AppTheme.completedGreen;
-                } else {
-                  textColor = isCurrentMonth
-                      ? theme.textTheme.bodyLarge?.color
-                      : theme.textTheme.bodyMedium?.color;
                 }
 
-                return TweenAnimationBuilder<double>(
-                  duration: Duration(milliseconds: 200 + (index * 10)),
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  builder: (context, value, child) {
-                    return Transform.scale(
-                      scale: value,
-                      child: Opacity(
-                        opacity: value,
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: InkWell(
-                    onTap: () => onDateSelected(day),
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: backgroundColor,
-                        borderRadius: BorderRadius.circular(12),
-                        border: borderColor != null
-                            ? Border.all(color: borderColor, width: 2)
-                            : null,
-                      ),
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: Text(
-                              DateFormat('d').format(day),
-                              style: TextStyle(
-                                color: textColor,
-                                fontWeight: (isToday || isSelected || (hasCompletedTasks && hasTasks))
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                                fontSize: 14,
-                              ),
+                /// Plan day
+                else if (hasPlan) {
+                  backgroundColor = Colors.yellowAccent.withOpacity(0.4);
+                  textColor = Colors.black;
+                }
+
+                /// Today
+                else if (isToday) {
+                  borderColor = theme.primaryColor;
+                  textColor = theme.primaryColor;
+                }
+
+                /// Completed tasks
+                else if (hasTasks && isCompleted) {
+                  backgroundColor =
+                      AppTheme.completedGreen.withOpacity(0.25);
+                  textColor = AppTheme.completedGreen;
+                }
+
+                /// Default
+                else {
+                  textColor = isCurrentMonth
+                      ? theme.textTheme.bodyLarge?.color
+                      : theme.disabledColor;
+                }
+
+                return InkWell(
+                  onTap: () => onDateSelected(day),
+
+                  borderRadius: BorderRadius.circular(12),
+
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: backgroundColor,
+                      borderRadius: BorderRadius.circular(12),
+                      border: borderColor != null
+                          ? Border.all(color: borderColor, width: 2)
+                          : null,
+                    ),
+
+                    child: Stack(
+                      children: [
+
+                        /// Day number
+                        Center(
+                          child: Text(
+                            DateFormat('d').format(day),
+                            style: TextStyle(
+                              color: textColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
                             ),
                           ),
-                          // Task indicator dot
-                          if (hasTasks && !isSelected && !hasCompletedTasks)
-                            Positioned(
-                              bottom: 4,
-                              left: 0,
-                              right: 0,
-                              child: Center(
-                                child: Container(
-                                  width: 4,
-                                  height: 4,
-                                  decoration: BoxDecoration(
-                                    color: theme.primaryColor,
-                                    shape: BoxShape.circle,
-                                  ),
+                        ),
+
+                        /// Pending task indicator
+                        if (hasTasks && !isCompleted)
+                          Positioned(
+                            bottom: 4,
+                            left: 0,
+                            right: 0,
+                            child: Center(
+                              child: Container(
+                                width: 5,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                  color: Colors.orange,
+                                  shape: BoxShape.circle,
                                 ),
                               ),
                             ),
-                        ],
-                      ),
+                          ),
+                      ],
                     ),
                   ),
                 );

@@ -2,7 +2,7 @@ import 'package:daily_diary_app/screens/nav_screens/calender_screen.dart';
 import 'package:daily_diary_app/screens/nav_screens/history_Screen.dart';
 import 'package:daily_diary_app/screens/nav_screens/profile_screen.dart';
 import 'package:daily_diary_app/screens/notes_screen.dart';
-import 'package:daily_diary_app/screens/nav_screens/streak_Screen.dart';
+import 'package:daily_diary_app/screens/nav_screens/plan_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
