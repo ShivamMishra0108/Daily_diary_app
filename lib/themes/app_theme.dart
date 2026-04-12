@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // Light Theme Colors
+
   static const Color lightPrimary = Color(0xFFFF8C42);
   static const Color lightPrimaryLight = Color(0xFFFFB380);
   static const Color lightBackground = Color(0xFFFFFFFF);
@@ -11,7 +11,6 @@ class AppTheme {
   static const Color lightBorder = Color(0xFFFFD6B8);
   static const Color completedGreen = Color(0xFF4CAF50);
 
-  // Dark Theme Colors
   static const Color darkPrimary = Color(0xFFFF8C42);
   static const Color darkPrimaryLight = Color(0xFFFF6B1A);
   static const Color darkBackground = Color(0xFF1A1A1A);
@@ -34,7 +33,6 @@ class AppTheme {
       background: lightBackground,
     ),
 
-    /// ✅ FIX: ICON THEME ADDED
     iconTheme: const IconThemeData(
       color: lightText,
     ),
@@ -74,7 +72,6 @@ class AppTheme {
     ),
   );
 
-  /// DARK THEME
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
@@ -88,7 +85,6 @@ class AppTheme {
       background: darkBackground,
     ),
 
-    /// ✅ FIX: ICON THEME ADDED
     iconTheme: const IconThemeData(
       color: darkText,
     ),

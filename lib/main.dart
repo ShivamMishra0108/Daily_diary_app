@@ -14,14 +14,11 @@ import 'themes/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  /// ✅ INIT HIVE
   await Hive.initFlutter();
 
-  /// ✅ REGISTER ADAPTERS (IMPORTANT: only once)
   Hive.registerAdapter(PlanAdapter());
   Hive.registerAdapter(TaskAdapter());
 
-  /// ✅ OPEN BOXES
   await Hive.openBox<Plan>('plansBox');
   await Hive.openBox<Task>('tasksBox');
 
@@ -35,17 +32,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        /// ✅ THEME PROVIDER
         ChangeNotifierProvider(
           create: (_) => ThemeProvider(),
         ),
 
-        /// ✅ TASK PROVIDER
         ChangeNotifierProvider(
           create: (_) => TaskProvider(),
         ),
 
-        /// ✅ PLAN PROVIDER
         ChangeNotifierProvider(
           create: (_) => PlanProvider(),
         ),
@@ -68,7 +62,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/// ✅ THEME PROVIDER (CLEAN)
 class ThemeProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.light;
 

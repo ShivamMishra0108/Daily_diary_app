@@ -12,12 +12,11 @@ class MainScreen extends StatefulWidget {
   @override
   State<MainScreen> createState() => _MainVendorScreenState();
 }
-
 class _MainVendorScreenState extends State<MainScreen> {
   int _pageIndex = 0;
 
   final List<Widget> _pages = [
-    CalendarScreen(),
+    CalendarScreen(), 
     PlanScreen(),
     HistoryScreen(),
     ProfileScreen()
@@ -33,7 +32,7 @@ class _MainVendorScreenState extends State<MainScreen> {
             _pageIndex = value;
           });
         },
-        unselectedItemColor: Colors.grey.shade900,
+        unselectedItemColor: AppBarTheme().iconTheme?.color,
         selectedItemColor: Colors.orange,
         type: BottomNavigationBarType.fixed,
         items: [

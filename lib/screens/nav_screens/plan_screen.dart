@@ -84,7 +84,7 @@ class _PlanScreenState extends State<PlanScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            /// INPUT
+
             TextField(
               controller: _planController,
               decoration: const InputDecoration(
@@ -145,7 +145,6 @@ class _PlanScreenState extends State<PlanScreen> {
 
             const SizedBox(height: 16),
 
-            /// SAVE BUTTON
             ElevatedButton(
               onPressed: _savePlan,
               child: const Text("Save Plan"),
@@ -153,7 +152,6 @@ class _PlanScreenState extends State<PlanScreen> {
 
             const SizedBox(height: 20),
 
-            /// PLAN LIST
             Expanded(
               child: plans.isEmpty
                   ? const Center(child: Text("No Plans Yet"))
@@ -166,12 +164,10 @@ class _PlanScreenState extends State<PlanScreen> {
                           child: ListTile(
                             title: Text(plan.name),
 
-                            /// ✅ FIXED HERE
                             subtitle: Text(
                               "${_dateFormat.format(plan.startDate)} - ${_dateFormat.format(plan.endDate)}",
                             ),
 
-                            /// ✅ WITH DELETE BUTTON
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [

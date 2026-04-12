@@ -60,7 +60,6 @@ class CalendarGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    /// ✅ SAFE PROVIDER ACCESS
     final taskProvider = context.watch<TaskProvider>();
     final planProvider = context.watch<PlanProvider>();
 
@@ -72,7 +71,6 @@ class CalendarGrid extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          /// Week headers
           Row(
             children: weekDays.map((day) {
               return Expanded(
@@ -90,7 +88,6 @@ class CalendarGrid extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          /// Calendar Grid
           Expanded(
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
@@ -110,7 +107,6 @@ class CalendarGrid extends StatelessWidget {
                 final isTodayDay = _isToday(day);
                 final isSelectedDay = _isSameDay(day, selectedDate);
 
-                /// ✅ SAFE CALLS (make sure provider returns bool always)
                 final hasTasks = taskProvider.hasTasksForDate(day);
                 final isCompleted = taskProvider.isDateCompleted(day);
                 final hasPlan = planProvider.isDateInPlan(day);
@@ -119,31 +115,27 @@ class CalendarGrid extends StatelessWidget {
                 Color? borderColor;
                 Color? textColor;
 
-                /// Selected
+                
                 if (isSelectedDay) {
                   backgroundColor = theme.primaryColor;
                   textColor = Colors.white;
                 }
 
-                /// Plan day
                 else if (hasPlan) {
                   backgroundColor = Colors.yellow.withOpacity(0.4);
                   textColor = Colors.black;
                 }
 
-                /// Today
                 else if (isTodayDay) {
                   borderColor = theme.primaryColor;
                   textColor = theme.primaryColor;
                 }
 
-                /// Completed tasks
                 else if (hasTasks && isCompleted) {
                   backgroundColor =
                       AppTheme.completedGreen.withOpacity(0.25);
                   textColor = AppTheme.completedGreen;
                 }
-
                 /// Default
                 else {
                   textColor = isCurrentMonthDay
@@ -166,7 +158,6 @@ class CalendarGrid extends StatelessWidget {
 
                     child: Stack(
                       children: [
-                        /// Day number
                         Center(
                           child: Text(
                             DateFormat('d').format(day),
@@ -178,7 +169,7 @@ class CalendarGrid extends StatelessWidget {
                           ),
                         ),
 
-                        /// Pending task dot
+                  
                         if (hasTasks && !isCompleted)
                           Positioned(
                             bottom: 4,

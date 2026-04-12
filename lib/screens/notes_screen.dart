@@ -68,7 +68,7 @@ class _NotesScreenState extends State<NotesScreen> {
       ),
       body: Column(
         children: [
-          // Add Task Input
+
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -129,7 +129,6 @@ class _NotesScreenState extends State<NotesScreen> {
             ),
           ),
 
-          // Tasks List
           Expanded(
             child: tasks.isEmpty
                 ? Center(
@@ -176,7 +175,6 @@ class _NotesScreenState extends State<NotesScreen> {
                   ),
           ),
 
-          // Summary Footer
           if (tasks.isNotEmpty)
             Container(
               padding: const EdgeInsets.all(16),

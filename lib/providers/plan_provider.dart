@@ -9,7 +9,6 @@ class PlanProvider with ChangeNotifier {
 
   List<Plan> get plans => _plans;
 
-  /// ✅ AUTO LOAD
   PlanProvider() {
     loadPlans();
   }
@@ -35,17 +34,12 @@ class PlanProvider with ChangeNotifier {
     loadPlans();
   }
 
-  /// DELETE PLAN
+  // DELETE PLAN
   Future<void> deletePlan(Plan plan) async {
     await plan.delete();
     loadPlans();
   }
 
-  // ================================
-  // 📅 CALENDAR FUNCTION (IMPORTANT)
-  // ================================
-
-  /// ✅ CHECK IF DATE IS INSIDE ANY PLAN
   bool isDateInPlan(DateTime date) {
     for (var plan in _plans) {
       if ((date.isAfter(plan.startDate) ||
@@ -58,7 +52,7 @@ class PlanProvider with ChangeNotifier {
     return false;
   }
 
-  /// HELPER
+  // HELPER
   bool _isSameDay(DateTime a, DateTime b) {
     return a.year == b.year &&
         a.month == b.month &&

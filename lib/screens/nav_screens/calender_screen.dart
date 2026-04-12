@@ -36,7 +36,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
     _pageController.dispose();
     super.dispose();
   }
-
   DateTime _getDateForPage(int page) {
     final monthOffset = page - _initialPage;
     return DateTime(_currentDate.year, _currentDate.month + monthOffset, 1);
@@ -47,7 +46,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
       _currentDate = _getDateForPage(page);
     });
   }
-
   void _goToToday() {
     setState(() {
       _currentDate = DateTime.now();
@@ -143,7 +141,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
               const SizedBox(height: 24),
 
-              /// CALENDAR CARD
               Expanded(
                 child: Card(
                   child: Column(
@@ -154,14 +151,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
                         onPreviousMonth: () {
                           _pageController.previousPage(
-                            duration: const Duration(milliseconds: 300),
+                            duration: const Duration(milliseconds: 200),
                             curve: Curves.easeInOut,
                           );
                         },
-
                         onNextMonth: () {
                           _pageController.nextPage(
-                            duration: const Duration(milliseconds: 300),
+                            duration: const Duration(milliseconds: 200),
                             curve: Curves.easeInOut,
                           );
                         },
@@ -269,7 +265,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
               const SizedBox(height: 16),
 
-              /// LEGEND
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
 
