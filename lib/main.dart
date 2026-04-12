@@ -3,23 +3,27 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'models/plan.dart';
+import 'models/task.dart';
+
 import 'providers/plan_provider.dart';
 import 'providers/task_provider.dart';
+
 import 'screens/main_screen.dart';
 import 'themes/app_theme.dart';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
 
-  /// Initialize Hive
+  /// ✅ INIT HIVE
   await Hive.initFlutter();
 
-  /// Register adapters
+  /// ✅ REGISTER ADAPTERS (IMPORTANT: only once)
   Hive.registerAdapter(PlanAdapter());
+  Hive.registerAdapter(TaskAdapter());
 
-  /// Open boxes
-  await Hive.openBox<Plan>('plans');
+  /// ✅ OPEN BOXES
+  await Hive.openBox<Plan>('plansBox');
+  await Hive.openBox<Task>('tasksBox');
 
   runApp(const MyApp());
 }
@@ -29,30 +33,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return MultiProvider(
-
       providers: [
-
-        /// Theme Provider
+        /// ✅ THEME PROVIDER
         ChangeNotifierProvider(
           create: (_) => ThemeProvider(),
         ),
 
-        /// Task Provider
+        /// ✅ TASK PROVIDER
         ChangeNotifierProvider(
-          create: (_) => TaskProvider()..loadTasks(),
+          create: (_) => TaskProvider(),
         ),
 
-        /// Plan Provider
+        /// ✅ PLAN PROVIDER
         ChangeNotifierProvider(
-          create: (_) => PlanProvider()..init(),
+          create: (_) => PlanProvider(),
         ),
       ],
-
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
-
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: "Daily Diary",
@@ -69,8 +68,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// ✅ THEME PROVIDER (CLEAN)
 class ThemeProvider extends ChangeNotifier {
-
   ThemeMode _themeMode = ThemeMode.light;
 
   ThemeMode get themeMode => _themeMode;
@@ -78,7 +77,6 @@ class ThemeProvider extends ChangeNotifier {
   bool get isDarkMode => _themeMode == ThemeMode.dark;
 
   void toggleTheme() {
-
     _themeMode =
         _themeMode == ThemeMode.light
             ? ThemeMode.dark

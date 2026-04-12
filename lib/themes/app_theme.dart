@@ -20,17 +20,25 @@ class AppTheme {
   static const Color darkTextSecondary = Color(0xFFB0B0B0);
   static const Color darkBorder = Color(0xFF404040);
 
+  /// LIGHT THEME
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
     primaryColor: lightPrimary,
     scaffoldBackgroundColor: lightBackground,
+
     colorScheme: const ColorScheme.light(
       primary: lightPrimary,
       secondary: lightPrimaryLight,
       surface: lightSurface,
       background: lightBackground,
     ),
+
+    /// ✅ FIX: ICON THEME ADDED
+    iconTheme: const IconThemeData(
+      color: lightText,
+    ),
+
     appBarTheme: const AppBarTheme(
       backgroundColor: lightBackground,
       elevation: 0,
@@ -41,11 +49,15 @@ class AppTheme {
         fontWeight: FontWeight.bold,
       ),
     ),
+
     cardTheme: CardThemeData(
       color: lightBackground,
       elevation: 8,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
     ),
+
     textTheme: const TextTheme(
       displayLarge: TextStyle(
         color: lightText,
@@ -62,17 +74,25 @@ class AppTheme {
     ),
   );
 
+  /// DARK THEME
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
     primaryColor: darkPrimary,
     scaffoldBackgroundColor: darkBackground,
+
     colorScheme: const ColorScheme.dark(
       primary: darkPrimary,
       secondary: darkPrimaryLight,
       surface: darkSurface,
       background: darkBackground,
     ),
+
+    /// ✅ FIX: ICON THEME ADDED
+    iconTheme: const IconThemeData(
+      color: darkText,
+    ),
+
     appBarTheme: const AppBarTheme(
       backgroundColor: darkBackground,
       elevation: 0,
@@ -83,11 +103,15 @@ class AppTheme {
         fontWeight: FontWeight.bold,
       ),
     ),
+
     cardTheme: CardThemeData(
       color: darkSurface,
       elevation: 8,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
     ),
+
     textTheme: const TextTheme(
       displayLarge: TextStyle(
         color: darkText,

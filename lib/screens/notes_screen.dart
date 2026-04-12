@@ -62,10 +62,7 @@ class _NotesScreenState extends State<NotesScreen> {
           if (tasks.isNotEmpty && isAllCompleted)
             Padding(
               padding: const EdgeInsets.only(right: 16),
-              child: Icon(
-                Icons.check_circle,
-                color: const Color(0xFF4CAF50),
-              ),
+              child: Icon(Icons.check_circle, color: const Color(0xFF4CAF50)),
             ),
         ],
       ),
@@ -142,7 +139,9 @@ class _NotesScreenState extends State<NotesScreen> {
                         Icon(
                           Icons.task_alt,
                           size: 80,
-                          color: theme.textTheme.bodyMedium?.color?.withOpacity(0.3),
+                          color: theme.textTheme.bodyMedium?.color?.withOpacity(
+                            0.3,
+                          ),
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -166,10 +165,11 @@ class _NotesScreenState extends State<NotesScreen> {
                       return TaskItem(
                         task: tasks[index],
                         onToggle: () {
-                          taskProvider.toggleTaskCompletion(tasks[index].id);
+                          taskProvider.toggleTask(tasks[index]);
                         },
+
                         onDelete: () {
-                          taskProvider.deleteTask(tasks[index].id);
+                          taskProvider.deleteTask(tasks[index]);
                         },
                       );
                     },
@@ -197,10 +197,7 @@ class _NotesScreenState extends State<NotesScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Total Tasks',
-                        style: theme.textTheme.bodyMedium,
-                      ),
+                      Text('Total Tasks', style: theme.textTheme.bodyMedium),
                       Text(
                         '${tasks.where((t) => t.isCompleted).length} / ${tasks.length} completed',
                         style: theme.textTheme.bodyLarge?.copyWith(

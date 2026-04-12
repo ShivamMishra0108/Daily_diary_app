@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class CalendarGrid extends StatelessWidget {
-
   final DateTime currentDate;
   final DateTime? selectedDate;
   final Function(DateTime) onDateSelected;
@@ -59,24 +58,22 @@ class CalendarGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final theme = Theme.of(context);
 
-    final taskProvider = Provider.of<TaskProvider>(context);
-    final planProvider = Provider.of<PlanProvider>(context);
+    /// ✅ SAFE PROVIDER ACCESS
+    final taskProvider = context.watch<TaskProvider>();
+    final planProvider = context.watch<PlanProvider>();
 
     final days = _getDaysInMonth(currentDate);
 
-    final weekDays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    final weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-
           /// Week headers
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: weekDays.map((day) {
               return Expanded(
                 child: Center(
@@ -97,6 +94,7 @@ class CalendarGrid extends StatelessWidget {
           Expanded(
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
+              itemCount: days.length,
 
               gridDelegate:
                   const SliverGridDelegateWithFixedCrossAxisCount(
@@ -105,19 +103,16 @@ class CalendarGrid extends StatelessWidget {
                 mainAxisSpacing: 8,
               ),
 
-              itemCount: days.length,
-
               itemBuilder: (context, index) {
-
                 final day = days[index];
 
-                final isCurrentMonth = _isCurrentMonth(day);
-                final isToday = _isToday(day);
-                final isSelected = _isSameDay(day, selectedDate);
+                final isCurrentMonthDay = _isCurrentMonth(day);
+                final isTodayDay = _isToday(day);
+                final isSelectedDay = _isSameDay(day, selectedDate);
 
+                /// ✅ SAFE CALLS (make sure provider returns bool always)
                 final hasTasks = taskProvider.hasTasksForDate(day);
                 final isCompleted = taskProvider.isDateCompleted(day);
-
                 final hasPlan = planProvider.isDateInPlan(day);
 
                 Color? backgroundColor;
@@ -125,19 +120,19 @@ class CalendarGrid extends StatelessWidget {
                 Color? textColor;
 
                 /// Selected
-                if (isSelected) {
+                if (isSelectedDay) {
                   backgroundColor = theme.primaryColor;
                   textColor = Colors.white;
                 }
 
                 /// Plan day
                 else if (hasPlan) {
-                  backgroundColor = Colors.yellowAccent.withOpacity(0.4);
+                  backgroundColor = Colors.yellow.withOpacity(0.4);
                   textColor = Colors.black;
                 }
 
                 /// Today
-                else if (isToday) {
+                else if (isTodayDay) {
                   borderColor = theme.primaryColor;
                   textColor = theme.primaryColor;
                 }
@@ -151,14 +146,13 @@ class CalendarGrid extends StatelessWidget {
 
                 /// Default
                 else {
-                  textColor = isCurrentMonth
+                  textColor = isCurrentMonthDay
                       ? theme.textTheme.bodyLarge?.color
                       : theme.disabledColor;
                 }
 
                 return InkWell(
                   onTap: () => onDateSelected(day),
-
                   borderRadius: BorderRadius.circular(12),
 
                   child: Container(
@@ -172,7 +166,6 @@ class CalendarGrid extends StatelessWidget {
 
                     child: Stack(
                       children: [
-
                         /// Day number
                         Center(
                           child: Text(
@@ -185,7 +178,7 @@ class CalendarGrid extends StatelessWidget {
                           ),
                         ),
 
-                        /// Pending task indicator
+                        /// Pending task dot
                         if (hasTasks && !isCompleted)
                           Positioned(
                             bottom: 4,
@@ -195,7 +188,7 @@ class CalendarGrid extends StatelessWidget {
                               child: Container(
                                 width: 5,
                                 height: 5,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   color: Colors.orange,
                                   shape: BoxShape.circle,
                                 ),

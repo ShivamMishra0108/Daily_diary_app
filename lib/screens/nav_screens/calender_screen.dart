@@ -1,4 +1,3 @@
-
 import 'package:daily_diary_app/widgets/calender_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -67,9 +66,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void _openNotesScreen(DateTime date) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => NotesScreen(selectedDate: date),
-      ),
+      MaterialPageRoute(builder: (context) => NotesScreen(selectedDate: date)),
     );
   }
 
@@ -95,7 +92,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final theme = Theme.of(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
     final taskProvider = Provider.of<TaskProvider>(context);
-  
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -107,7 +103,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
 
             children: [
-
               /// HEADER
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -116,14 +111,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Calendar',
-                          style: theme.textTheme.displayLarge),
+                      Text('Calendar', style: theme.textTheme.displayLarge),
 
                       const SizedBox(height: 4),
 
                       Text(
-                        DateFormat('EEEE, MMMM d, yyyy')
-                            .format(DateTime.now()),
+                        DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now()),
                         style: theme.textTheme.bodyMedium,
                       ),
                     ],
@@ -155,23 +148,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 child: Card(
                   child: Column(
                     children: [
-
                       /// MONTH HEADER
                       MonthSlider(
                         currentDate: _currentDate,
 
                         onPreviousMonth: () {
                           _pageController.previousPage(
-                            duration:
-                                const Duration(milliseconds: 300),
+                            duration: const Duration(milliseconds: 300),
                             curve: Curves.easeInOut,
                           );
                         },
 
                         onNextMonth: () {
                           _pageController.nextPage(
-                            duration:
-                                const Duration(milliseconds: 300),
+                            duration: const Duration(milliseconds: 300),
                             curve: Curves.easeInOut,
                           );
                         },
@@ -210,8 +200,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             color: theme.colorScheme.surface,
                             border: Border(
                               top: BorderSide(
-                                color: theme.brightness ==
-                                        Brightness.light
+                                color: theme.brightness == Brightness.light
                                     ? const Color(0xFFFFD6B8)
                                     : const Color(0xFF404040),
                                 width: 1,
@@ -220,26 +209,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           ),
 
                           child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
 
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
 
                                 children: [
                                   Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
+                                        CrossAxisAlignment.start,
 
                                     children: [
                                       Text(
                                         'Selected Date',
-                                        style: theme
-                                            .textTheme.bodyMedium,
+                                        style: theme.textTheme.bodyMedium,
                                       ),
 
                                       const SizedBox(height: 4),
@@ -247,41 +232,28 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                       Text(
                                         DateFormat(
                                           'EEEE, MMMM d, yyyy',
-                                        ).format(
-                                            _selectedDate!),
+                                        ).format(_selectedDate!),
 
-                                        style: theme
-                                            .textTheme
-                                            .displayMedium
-                                            ?.copyWith(
-                                                fontSize: 18),
+                                        style: theme.textTheme.displayMedium
+                                            ?.copyWith(fontSize: 18),
                                       ),
                                     ],
                                   ),
 
                                   ElevatedButton.icon(
                                     onPressed: () =>
-                                        _openNotesScreen(
-                                            _selectedDate!),
+                                        _openNotesScreen(_selectedDate!),
 
-                                    icon: const Icon(
-                                      Icons.note_add,
-                                      size: 18,
-                                    ),
+                                    icon: const Icon(Icons.note_add, size: 18),
 
-                                    label:
-                                        const Text('Tasks'),
+                                    label: const Text('Tasks'),
                                   ),
                                 ],
                               ),
 
-                              if (taskProvider
-                                  .hasTasksForDate(
-                                      _selectedDate!))
+                              if (taskProvider.hasTasksForDate(_selectedDate!))
                                 Padding(
-                                  padding:
-                                      const EdgeInsets
-                                          .only(top: 8),
+                                  padding: const EdgeInsets.only(top: 8),
 
                                   child: Text(
                                     '${taskProvider.getTasksForDate(_selectedDate!).length} task(s)',
@@ -299,18 +271,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
               /// LEGEND
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
 
                 children: [
-                  _buildColorLegend(
-                      Colors.green, "Completed"),
-                  _buildColorLegend(
-                      Colors.orange, "Pending"),
-                  _buildColorLegend(
-                      Colors.yellowAccent, "Plan"),
-                  _buildColorLegend(
-                      Colors.grey, "No Tasks"),
+                  _buildColorLegend(Colors.green, "Completed"),
+                  _buildColorLegend(Colors.orange, "Pending"),
+                  _buildColorLegend(Colors.yellowAccent, "Plan"),
+                  _buildColorLegend(Colors.grey, "No Tasks"),
                 ],
               ),
 
@@ -343,4 +310,3 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 }
-

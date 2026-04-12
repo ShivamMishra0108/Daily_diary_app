@@ -1,75 +1,87 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
 import '../models/task.dart';
 
-class TaskProvider extends ChangeNotifier {
+class TaskProvider with ChangeNotifier {
+
+  /// ✅ DIRECT BOX INIT (NO init() needed)
+  final Box<Task> _taskBox = Hive.box<Task>('tasksBox');
+
   List<Task> _tasks = [];
-  static const String _storageKey = 'tasks';
 
   List<Task> get tasks => _tasks;
 
+  /// ✅ CONSTRUCTOR AUTO LOAD
+  TaskProvider() {
+    loadTasks();
+  }
+
+  /// LOAD ALL TASKS
+  void loadTasks() {
+    _tasks = _taskBox.values.toList();
+    notifyListeners();
+  }
+
+  /// ADD TASK
+  Future<void> addTask(Task task) async {
+    await _taskBox.add(task);
+    loadTasks();
+  }
+
+  /// UPDATE TASK
+  Future<void> updateTask(Task task) async {
+    await task.save();
+    loadTasks();
+  }
+
+  /// DELETE TASK
+  Future<void> deleteTask(Task task) async {
+    await task.delete();
+    loadTasks();
+  }
+
+  /// TOGGLE COMPLETION
+  Future<void> toggleTask(Task task) async {
+    task.isCompleted = !task.isCompleted;
+    await task.save();
+    loadTasks();
+  }
+
+  // ================================
+  // 📅 CALENDAR FUNCTIONS
+  // ================================
+
+  /// GET TASKS FOR DATE
   List<Task> getTasksForDate(DateTime date) {
     return _tasks.where((task) {
-      return task.date.year == date.year &&
-          task.date.month == date.month &&
-          task.date.day == date.day;
+      final d = task.date;
+      return d.year == date.year &&
+          d.month == date.month &&
+          d.day == date.day;
     }).toList();
   }
 
-  bool isDateCompleted(DateTime date) {
-    final dateTasks = getTasksForDate(date);
-    if (dateTasks.isEmpty) return false;
-    return dateTasks.every((task) => task.isCompleted);
-  }
-
+  /// HAS TASKS
   bool hasTasksForDate(DateTime date) {
     return getTasksForDate(date).isNotEmpty;
   }
 
-  Future<void> addTask(Task task) async {
-    _tasks.add(task);
-    notifyListeners();
-    await _saveTasks();
+  /// ALL COMPLETED?
+  bool isDateCompleted(DateTime date) {
+    final tasks = getTasksForDate(date);
+    if (tasks.isEmpty) return false;
+    return tasks.every((t) => t.isCompleted);
   }
 
-  Future<void> updateTask(Task task) async {
-    final index = _tasks.indexWhere((t) => t.id == task.id);
-    if (index != -1) {
-      _tasks[index] = task;
-      notifyListeners();
-      await _saveTasks();
-    }
+  /// COUNT
+  int taskCountForDate(DateTime date) {
+    return getTasksForDate(date).length;
   }
 
-  Future<void> deleteTask(String taskId) async {
-    _tasks.removeWhere((task) => task.id == taskId);
-    notifyListeners();
-    await _saveTasks();
-  }
-
-  Future<void> toggleTaskCompletion(String taskId) async {
-    final index = _tasks.indexWhere((t) => t.id == taskId);
-    if (index != -1) {
-      _tasks[index].isCompleted = !_tasks[index].isCompleted;
-      notifyListeners();
-      await _saveTasks();
-    }
-  }
-
-  Future<void> _saveTasks() async {
-    final prefs = await SharedPreferences.getInstance();
-    final tasksJson = _tasks.map((task) => task.toJson()).toList();
-    await prefs.setString(_storageKey, json.encode(tasksJson));
-  }
-
-  Future<void> loadTasks() async {
-    final prefs = await SharedPreferences.getInstance();
-    final tasksString = prefs.getString(_storageKey);
-    if (tasksString != null) {
-      final List<dynamic> tasksJson = json.decode(tasksString);
-      _tasks = tasksJson.map((json) => Task.fromJson(json)).toList();
-      notifyListeners();
-    }
+  /// COMPLETED COUNT
+  int completedTaskCountForDate(DateTime date) {
+    return getTasksForDate(date)
+        .where((t) => t.isCompleted)
+        .length;
   }
 }

@@ -1,7 +1,19 @@
-class Task {
-  final String id;
-  final String title;
-  final DateTime date;
+import 'package:hive/hive.dart';
+
+part 'task.g.dart';
+
+@HiveType(typeId: 1)
+class Task extends HiveObject {
+  @HiveField(0)
+  String id;
+
+  @HiveField(1)
+  String title;
+
+  @HiveField(2)
+  DateTime date;
+
+  @HiveField(3)
   bool isCompleted;
 
   Task({
@@ -10,36 +22,4 @@ class Task {
     required this.date,
     this.isCompleted = false,
   });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'date': date.toIso8601String(),
-      'isCompleted': isCompleted,
-    };
-  }
-
-  factory Task.fromJson(Map<String, dynamic> json) {
-    return Task(
-      id: json['id'],
-      title: json['title'],
-      date: DateTime.parse(json['date']),
-      isCompleted: json['isCompleted'] ?? false,
-    );
-  }
-
-  Task copyWith({
-    String? id,
-    String? title,
-    DateTime? date,
-    bool? isCompleted,
-  }) {
-    return Task(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      date: date ?? this.date,
-      isCompleted: isCompleted ?? this.isCompleted,
-    );
-  }
 }
