@@ -14,15 +14,53 @@ import 'themes/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Hive.initFlutter();
+  try {
+    await Hive.initFlutter();
 
-  Hive.registerAdapter(PlanAdapter());
-  Hive.registerAdapter(TaskAdapter());
+    /// ✅ REGISTER ADAPTERS (ONLY ONCE)
+    if (!Hive.isAdapterRegistered(0)) {
+      Hive.registerAdapter(PlanAdapter());
+    }
+    if (!Hive.isAdapterRegistered(1)) {
+      Hive.registerAdapter(TaskAdapter());
+    }
 
-  await Hive.openBox<Plan>('plansBox');
-  await Hive.openBox<Task>('tasksBox');
+    /// ❌ REMOVE deleteBox (was causing repeated issues)
+    /// await Hive.deleteBoxFromDisk('plansBox');
 
-  runApp(const MyApp());
+    /// ✅ OPEN BOXES SAFELY
+    await Hive.openBox<Plan>('plansBox');
+    await Hive.openBox<Task>('tasksBox');
+
+    runApp(const MyApp());
+  } catch (e) {
+    /// 🔥 SHOW ERROR ON SCREEN INSTEAD OF WHITE SCREEN
+    runApp(ErrorApp(error: e.toString()));
+  }
+}
+
+/// 🔥 ERROR FALLBACK UI (prevents white screen)
+class ErrorApp extends StatelessWidget {
+  final String error;
+
+  const ErrorApp({super.key, required this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text(
+              "App Crash:\n$error",
+              style: const TextStyle(color: Colors.red),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -35,11 +73,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => ThemeProvider(),
         ),
-
         ChangeNotifierProvider(
           create: (_) => TaskProvider(),
         ),
-
         ChangeNotifierProvider(
           create: (_) => PlanProvider(),
         ),
@@ -49,11 +85,9 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: "Daily Diary",
-
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeProvider.themeMode,
-
             home: const MainScreen(),
           );
         },

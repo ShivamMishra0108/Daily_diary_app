@@ -1,7 +1,8 @@
 import 'package:daily_diary_app/screens/nav_screens/calender_screen.dart';
+import 'package:daily_diary_app/screens/nav_screens/daily_task_screen.dart';
 import 'package:daily_diary_app/screens/nav_screens/history_Screen.dart';
-import 'package:daily_diary_app/screens/nav_screens/profile_screen.dart';
-import 'package:daily_diary_app/screens/notes_screen.dart';
+import 'package:daily_diary_app/screens/Inner_screens/profile_screen.dart';
+import 'package:daily_diary_app/screens/Inner_screens/notes_screen.dart';
 import 'package:daily_diary_app/screens/nav_screens/plan_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class _MainVendorScreenState extends State<MainScreen> {
     CalendarScreen(), 
     PlanScreen(),
     HistoryScreen(),
-    ProfileScreen()
+    DailyTasksScreen(),
   
   ];
   @override
@@ -39,7 +40,7 @@ class _MainVendorScreenState extends State<MainScreen> {
         BottomNavigationBarItem(icon: Icon(Icons.calendar_today),label: "Calender"),
         BottomNavigationBarItem(icon: Icon(Icons.loop),label: "Plan"),
          BottomNavigationBarItem(icon: Icon(Icons.history),label: "History"),
-           BottomNavigationBarItem(icon: Icon(Icons.person),label: "Profile"),
+           BottomNavigationBarItem(icon: Icon(Icons.task),label: "Daily Tasks"),
       ]),
       body: _pages[_pageIndex],
     );

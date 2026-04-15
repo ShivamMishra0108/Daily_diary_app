@@ -71,6 +71,7 @@ class CalendarGrid extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
+          /// WEEK DAYS HEADER
           Row(
             children: weekDays.map((day) {
               return Expanded(
@@ -88,18 +89,17 @@ class CalendarGrid extends StatelessWidget {
 
           const SizedBox(height: 16),
 
+          /// GRID
           Expanded(
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
               itemCount: days.length,
-
               gridDelegate:
                   const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 7,
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
               ),
-
               itemBuilder: (context, index) {
                 final day = days[index];
 
@@ -111,42 +111,34 @@ class CalendarGrid extends StatelessWidget {
                 final isCompleted = taskProvider.isDateCompleted(day);
                 final hasPlan = planProvider.isDateInPlan(day);
 
+                /// COLORS
                 Color? backgroundColor;
                 Color? borderColor;
-                Color? textColor;
+
+                Color textColor = isCurrentMonthDay
+                    ? theme.textTheme.bodyLarge?.color ?? Colors.black
+                    : theme.disabledColor;
+
+                /// BACKGROUND STATES
+                if (hasPlan) {
+                  backgroundColor = Colors.yellow.withOpacity(0.35);
+                }
 
                 
+
+                /// BORDER STATES
+                if (isTodayDay) {
+                  borderColor = Colors.blue;
+                }
+
                 if (isSelectedDay) {
-                  backgroundColor = theme.primaryColor;
-                  textColor = Colors.white;
-                }
-
-                else if (hasPlan) {
-                  backgroundColor = Colors.yellow.withOpacity(0.4);
-                  textColor = Colors.black;
-                }
-
-                else if (isTodayDay) {
                   borderColor = theme.primaryColor;
-                  textColor = theme.primaryColor;
-                }
-
-                else if (hasTasks && isCompleted) {
-                  backgroundColor =
-                      AppTheme.completedGreen.withOpacity(0.25);
-                  textColor = AppTheme.completedGreen;
-                }
-                /// Default
-                else {
-                  textColor = isCurrentMonthDay
-                      ? theme.textTheme.bodyLarge?.color
-                      : theme.disabledColor;
+                  textColor = Colors.black;
                 }
 
                 return InkWell(
                   onTap: () => onDateSelected(day),
                   borderRadius: BorderRadius.circular(12),
-
                   child: Container(
                     decoration: BoxDecoration(
                       color: backgroundColor,
@@ -155,9 +147,9 @@ class CalendarGrid extends StatelessWidget {
                           ? Border.all(color: borderColor, width: 2)
                           : null,
                     ),
-
                     child: Stack(
                       children: [
+                        /// DATE TEXT
                         Center(
                           child: Text(
                             DateFormat('d').format(day),
@@ -169,7 +161,9 @@ class CalendarGrid extends StatelessWidget {
                           ),
                         ),
 
-                  
+                        
+
+                        /// 🟠 PENDING TASK DOT
                         if (hasTasks && !isCompleted)
                           Positioned(
                             bottom: 4,
@@ -177,13 +171,27 @@ class CalendarGrid extends StatelessWidget {
                             right: 0,
                             child: Center(
                               child: Container(
-                                width: 5,
-                                height: 5,
+                                width: 6,
+                                height: 6,
                                 decoration: const BoxDecoration(
                                   color: Colors.orange,
                                   shape: BoxShape.circle,
                                 ),
                               ),
+                            ),
+                          ),
+
+                       
+
+                        /// ✅ COMPLETED ICON
+                        if (hasTasks && isCompleted)
+                          Positioned(
+                            top: 4,
+                            left: 4,
+                            child: Icon(
+                              Icons.check_circle,
+                              size: 12,
+                              color: AppTheme.completedGreen,
                             ),
                           ),
                       ],

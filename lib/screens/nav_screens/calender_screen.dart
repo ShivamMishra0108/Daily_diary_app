@@ -1,3 +1,4 @@
+import 'package:daily_diary_app/screens/Inner_screens/profile_screen.dart';
 import 'package:daily_diary_app/widgets/calender_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -7,7 +8,7 @@ import '../../main.dart';
 import '../../providers/task_provider.dart';
 import '../../providers/plan_provider.dart';
 import '../../widgets/month_slider.dart';
-import '../notes_screen.dart';
+import '../Inner_screens/notes_screen.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({Key? key}) : super(key: key);
@@ -19,14 +20,16 @@ class CalendarScreen extends StatefulWidget {
 class _CalendarScreenState extends State<CalendarScreen> {
   late PageController _pageController;
 
+  final int _initialPage = 12000;
+
+  late DateTime _baseDate; 
   DateTime _currentDate = DateTime.now();
   DateTime? _selectedDate;
-
-  final int _initialPage = 12000;
 
   @override
   void initState() {
     super.initState();
+    _baseDate = DateTime.now(); // ✅ initialize once
     _pageController = PageController(initialPage: _initialPage);
     _selectedDate = DateTime.now();
   }
@@ -36,9 +39,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
     _pageController.dispose();
     super.dispose();
   }
+
+  /// ✅ FIXED: always calculate from baseDate
   DateTime _getDateForPage(int page) {
     final monthOffset = page - _initialPage;
-    return DateTime(_currentDate.year, _currentDate.month + monthOffset, 1);
+    return DateTime(_baseDate.year, _baseDate.month + monthOffset, 1);
   }
 
   void _onPageChanged(int page) {
@@ -46,13 +51,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
       _currentDate = _getDateForPage(page);
     });
   }
+
+  /// ✅ improved today navigation
   void _goToToday() {
+    _pageController.animateToPage(
+      _initialPage,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+
     setState(() {
       _currentDate = DateTime.now();
       _selectedDate = DateTime.now();
     });
-
-    _pageController.jumpToPage(_initialPage);
   }
 
   void _clearSelection() {
@@ -101,10 +112,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
 
             children: [
-              /// HEADER
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,11 +122,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       const SizedBox(height: 4),
 
                       Text(
-                        DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now()),
+                        DateFormat('EEEE, MMMM d, yyyy')
+                            .format(DateTime.now()),
                         style: theme.textTheme.bodyMedium,
                       ),
                     ],
                   ),
+                  SizedBox(width: 200,),
 
                   Container(
                     decoration: BoxDecoration(
@@ -136,6 +146,32 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       onPressed: themeProvider.toggleTheme,
                     ),
                   ),
+
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.person,
+                          color: Colors.blue.shade200,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ProfileScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+
                 ],
               ),
 
@@ -247,7 +283,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                 ],
                               ),
 
-                              if (taskProvider.hasTasksForDate(_selectedDate!))
+                              if (taskProvider
+                                  .hasTasksForDate(_selectedDate!))
                                 Padding(
                                   padding: const EdgeInsets.only(top: 8),
 
