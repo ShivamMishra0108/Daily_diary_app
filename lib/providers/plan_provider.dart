@@ -13,13 +13,11 @@ class PlanProvider with ChangeNotifier {
     loadPlans();
   }
 
-  /// LOAD ALL PLANS
   void loadPlans() {
     _plans = _planBox.values.toList();
     notifyListeners();
   }
 
-  /// ADD PLAN
   Future<void> addPlan(String name, DateTime start, DateTime end) async {
     final days = end.difference(start).inDays + 1;
 
@@ -34,7 +32,6 @@ class PlanProvider with ChangeNotifier {
     loadPlans();
   }
 
-  // DELETE PLAN
   Future<void> deletePlan(Plan plan) async {
     await plan.delete();
     loadPlans();
@@ -52,7 +49,6 @@ class PlanProvider with ChangeNotifier {
     return false;
   }
 
-  // HELPER
   bool _isSameDay(DateTime a, DateTime b) {
     return a.year == b.year &&
         a.month == b.month &&

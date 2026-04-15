@@ -1,7 +1,10 @@
 import 'package:daily_diary_app/screens/Inner_screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:hive/hive.dart';
+
 import '../../providers/task_provider.dart';
+import '../../models/profile.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -11,8 +14,20 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String? userName;
-  String? userGoal;
+
+  late Box<Profile> profileBox;
+  Profile? profile;
+
+  @override
+  void initState() {
+    super.initState();
+
+    profileBox = Hive.box<Profile>('profileBox');
+
+    if (profileBox.isNotEmpty) {
+      profile = profileBox.getAt(0);
+    }
+  }
 
   int calculateStreak(TaskProvider provider) {
     int streak = 0;
@@ -69,6 +84,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _saveName(String val) {
+    setState(() {
+      if (profile == null) {
+        profile = Profile(name: val, goal: "");
+        profileBox.add(profile!);
+      } else {
+        profile!.name = val;
+        profile!.save();
+      }
+    });
+  }
+
+  void _saveGoal(String val) {
+    setState(() {
+      if (profile == null) {
+        profile = Profile(name: "", goal: val);
+        profileBox.add(profile!);
+      } else {
+        profile!.goal = val;
+        profile!.save();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -88,7 +127,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text("Profile"),
-        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -120,15 +158,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          "Welcome ",
+                          "Welcome 👋",
                           style: TextStyle(
                               color: Colors.white, fontSize: 14),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          (userName == null || userName!.isEmpty)
-                              ? "Add your name"
-                              : userName!,
+                          profile?.name.isNotEmpty == true
+                              ? profile!.name
+                              : "Add your name",
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -142,9 +180,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   IconButton(
                     icon: const Icon(Icons.edit, color: Colors.white),
                     onPressed: () {
-                      _editField(context, "Name", userName, (val) {
-                        setState(() => userName = val);
-                      });
+                      _editField(
+                        context,
+                        "Name",
+                        profile?.name,
+                        _saveName,
+                      );
                     },
                   )
                 ],
@@ -166,9 +207,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   Expanded(
                     child: Text(
-                      (userGoal == null || userGoal!.isEmpty)
-                          ? "Set your goal for upcoming days "
-                          : userGoal!,
+                      profile?.goal.isNotEmpty == true
+                          ? profile!.goal
+                          : "Set your goal for upcoming days ",
                       style: const TextStyle(
                           fontWeight: FontWeight.w500),
                     ),
@@ -177,9 +218,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   IconButton(
                     icon: const Icon(Icons.edit),
                     onPressed: () {
-                      _editField(context, "Goal", userGoal, (val) {
-                        setState(() => userGoal = val);
-                      });
+                      _editField(
+                        context,
+                        "Goal",
+                        profile?.goal,
+                        _saveGoal,
+                      );
                     },
                   )
                 ],
@@ -194,27 +238,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: theme.cardColor,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Column(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Your Tasks",
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _statItem("Total", totalTasks),
-                      _statItem("Completed", completedTasks),
-                      _statItem("Active Days", daysActive),
-                      _statItem("Streak", streak),
-                    ],
-                  ),
+                  _statItem("Total", totalTasks),
+                  _statItem("Completed", completedTasks),
+                  _statItem("Active Days", daysActive),
+                  _statItem("Streak", streak),
                 ],
               ),
             ),
@@ -229,16 +259,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Column(
                 children: [
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Completion",
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: LinearProgressIndicator(
@@ -246,12 +266,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       minHeight: 10,
                     ),
                   ),
-
                   const SizedBox(height: 10),
-
                   Text(
                     "${(completionPercent * 100).toStringAsFixed(0)}% completed",
-                    style: theme.textTheme.bodyMedium,
                   ),
                 ],
               ),
@@ -266,7 +283,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Column(
                 children: [
-
                   ListTile(
                     leading: const Icon(Icons.settings),
                     title: const Text("Settings"),
@@ -279,23 +295,82 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                     },
                   ),
+                  Container(
+  decoration: BoxDecoration(
+    color: theme.cardColor,
+    borderRadius: BorderRadius.circular(20),
+  ),
+  child: Column(
+    children: [
 
-                  const Divider(height: 1),
+      /// ⚙️ SETTINGS
+      ListTile(
+        leading: const Icon(Icons.settings),
+        title: const Text("Settings"),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const Settings(),
+            ),
+          );
+        },
+      ),
 
-                  ListTile(
-                    leading: const Icon(Icons.delete),
-                    title: const Text("Clear All Tasks"),
-                    onTap: () {
-                    },
-                  ),
+      const Divider(height: 1),
 
-                  const Divider(height: 1),
+      ListTile(
+        leading: const Icon(Icons.delete, color: Colors.red),
+        title: const Text("Clear All Tasks"),
+        onTap: () async {
+          final confirm = await showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+              title: const Text("Confirm"),
+              content: const Text("Delete all tasks?"),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text("Cancel"),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  child: const Text("Delete"),
+                ),
+              ],
+            ),
+          );
 
-                  ListTile(
-                    leading: const Icon(Icons.info),
-                    title: const Text("About App"),
-                    onTap: () {},
-                  ),
+          if (confirm == true) {
+            final provider =
+                Provider.of<TaskProvider>(context, listen: false);
+
+            for (var task in provider.tasks) {
+              await task.delete();
+            }
+
+            provider.loadTasks();
+          }
+        },
+      ),
+
+      const Divider(height: 1),
+
+      ListTile(
+        leading: const Icon(Icons.info),
+        title: const Text("About App"),
+        onTap: () {
+          showAboutDialog(
+            context: context,
+            applicationName: "Daily Diary",
+            applicationVersion: "1.0.0",
+            applicationLegalese: "Made with Flutter 💙",
+          );
+        },
+      ),
+    ],
+  ),
+),
                 ],
               ),
             ),

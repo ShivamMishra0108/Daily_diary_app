@@ -95,7 +95,6 @@ class _PlanScreenState extends State<PlanScreen> {
 
             const SizedBox(height: 16),
 
-            /// START DATE
             Row(
               children: [
                 Text(
@@ -113,7 +112,6 @@ class _PlanScreenState extends State<PlanScreen> {
 
             const SizedBox(height: 12),
 
-            /// END DATE
             Row(
               children: [
                 Text(
@@ -133,7 +131,6 @@ class _PlanScreenState extends State<PlanScreen> {
 
             const SizedBox(height: 12),
 
-            /// TOTAL DAYS
             if (_startDate != null && _endDate != null)
               Text(
                 "Total Days: $_totalDays",

@@ -1,3 +1,6 @@
+import 'package:daily_diary_app/models/profile.dart';
+import 'package:daily_diary_app/services/notification_services.dart';
+import 'package:daily_diary_app/services/permission_service.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +20,6 @@ void main() async {
   try {
     await Hive.initFlutter();
 
-    /// ✅ REGISTER ADAPTERS (ONLY ONCE)
     if (!Hive.isAdapterRegistered(0)) {
       Hive.registerAdapter(PlanAdapter());
     }
@@ -25,21 +27,23 @@ void main() async {
       Hive.registerAdapter(TaskAdapter());
     }
 
-    /// ❌ REMOVE deleteBox (was causing repeated issues)
-    /// await Hive.deleteBoxFromDisk('plansBox');
+     await Hive.deleteBoxFromDisk('plansBox');
 
-    /// ✅ OPEN BOXES SAFELY
     await Hive.openBox<Plan>('plansBox');
     await Hive.openBox<Task>('tasksBox');
 
+    Hive.registerAdapter(ProfileAdapter());
+await Hive.openBox<Profile>('profileBox');
+    
+    await NotificationService.init();
+    await requestNotificationPermission();
+
     runApp(const MyApp());
   } catch (e) {
-    /// 🔥 SHOW ERROR ON SCREEN INSTEAD OF WHITE SCREEN
     runApp(ErrorApp(error: e.toString()));
   }
 }
 
-/// 🔥 ERROR FALLBACK UI (prevents white screen)
 class ErrorApp extends StatelessWidget {
   final String error;
 

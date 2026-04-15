@@ -4,6 +4,7 @@ part 'plan.g.dart';
 
 @HiveType(typeId: 0)
 class Plan extends HiveObject {
+
   @HiveField(0)
   String name;
 
@@ -13,13 +14,13 @@ class Plan extends HiveObject {
   @HiveField(2)
   DateTime endDate;
 
-  @HiveField(3)
+  @HiveField(3, defaultValue: 0) // ✅ THIS FIXES CRASH
   int days;
 
   Plan({
     required this.name,
     required this.startDate,
     required this.endDate,
-    required this.days,
+    this.days = 0, // ✅ default value here also
   });
 }

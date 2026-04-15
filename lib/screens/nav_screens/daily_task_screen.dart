@@ -32,7 +32,7 @@ class DailyTasksScreen extends StatelessWidget {
     final groupedTasks = groupTasksByDate(allTasks);
 
     final sortedDates = groupedTasks.keys.toList()
-      ..sort((a, b) => b.compareTo(a)); // latest first
+      ..sort((a, b) => b.compareTo(a)); 
 
     return Scaffold(
       appBar: AppBar(

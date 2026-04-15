@@ -71,7 +71,7 @@ class CalendarGrid extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          /// WEEK DAYS HEADER
+          
           Row(
             children: weekDays.map((day) {
               return Expanded(
@@ -89,7 +89,6 @@ class CalendarGrid extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          /// GRID
           Expanded(
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
@@ -111,7 +110,6 @@ class CalendarGrid extends StatelessWidget {
                 final isCompleted = taskProvider.isDateCompleted(day);
                 final hasPlan = planProvider.isDateInPlan(day);
 
-                /// COLORS
                 Color? backgroundColor;
                 Color? borderColor;
 
@@ -119,15 +117,11 @@ class CalendarGrid extends StatelessWidget {
                     ? theme.textTheme.bodyLarge?.color ?? Colors.black
                     : theme.disabledColor;
 
-                /// BACKGROUND STATES
                 if (hasPlan) {
                   backgroundColor = Colors.yellow.withOpacity(0.35);
                 }
 
-                
-
-                /// BORDER STATES
-                if (isTodayDay) {
+                                if (isTodayDay) {
                   borderColor = Colors.blue;
                 }
 
@@ -149,7 +143,6 @@ class CalendarGrid extends StatelessWidget {
                     ),
                     child: Stack(
                       children: [
-                        /// DATE TEXT
                         Center(
                           child: Text(
                             DateFormat('d').format(day),
@@ -160,10 +153,7 @@ class CalendarGrid extends StatelessWidget {
                             ),
                           ),
                         ),
-
                         
-
-                        /// 🟠 PENDING TASK DOT
                         if (hasTasks && !isCompleted)
                           Positioned(
                             bottom: 4,
@@ -182,8 +172,6 @@ class CalendarGrid extends StatelessWidget {
                           ),
 
                        
-
-                        /// ✅ COMPLETED ICON
                         if (hasTasks && isCompleted)
                           Positioned(
                             top: 4,

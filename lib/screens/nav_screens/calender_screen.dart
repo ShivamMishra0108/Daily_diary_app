@@ -1,4 +1,3 @@
-import 'package:daily_diary_app/screens/Inner_screens/profile_screen.dart';
 import 'package:daily_diary_app/screens/Inner_screens/settings.dart';
 import 'package:daily_diary_app/widgets/calender_grid.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +16,6 @@ class CalendarScreen extends StatefulWidget {
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
-
 class _CalendarScreenState extends State<CalendarScreen> {
   late PageController _pageController;
 
@@ -30,7 +28,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   void initState() {
     super.initState();
-    _baseDate = DateTime.now(); // ✅ initialize once
+    _baseDate = DateTime.now(); 
     _pageController = PageController(initialPage: _initialPage);
     _selectedDate = DateTime.now();
   }
@@ -41,7 +39,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
     super.dispose();
   }
 
-  /// ✅ FIXED: always calculate from baseDate
   DateTime _getDateForPage(int page) {
     final monthOffset = page - _initialPage;
     return DateTime(_baseDate.year, _baseDate.month + monthOffset, 1);
@@ -53,7 +50,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
     });
   }
 
-  /// ✅ improved today navigation
   void _goToToday() {
     _pageController.animateToPage(
       _initialPage,
@@ -181,7 +177,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 child: Card(
                   child: Column(
                     children: [
-                      /// MONTH HEADER
                       MonthSlider(
                         currentDate: _currentDate,
 
@@ -199,7 +194,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         },
                       ),
 
-                      /// CALENDAR GRID
                       Expanded(
                         child: PageView.builder(
                           controller: _pageController,
@@ -222,7 +216,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         ),
                       ),
 
-                      /// SELECTED DATE PANEL
                       if (_selectedDate != null)
                         Container(
                           width: double.infinity,
@@ -315,7 +308,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
               const SizedBox(height: 16),
 
-              /// ACTION BUTTONS
               Row(
                 children: [
                   Expanded(
