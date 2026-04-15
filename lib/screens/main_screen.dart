@@ -19,8 +19,8 @@ class _MainVendorScreenState extends State<MainScreen> {
   final List<Widget> _pages = [
     CalendarScreen(), 
     PlanScreen(),
-    HistoryScreen(),
     DailyTasksScreen(),
+    ProfileScreen()
   
   ];
   @override
@@ -39,8 +39,8 @@ class _MainVendorScreenState extends State<MainScreen> {
         items: [
         BottomNavigationBarItem(icon: Icon(Icons.calendar_today),label: "Calender"),
         BottomNavigationBarItem(icon: Icon(Icons.loop),label: "Plan"),
-         BottomNavigationBarItem(icon: Icon(Icons.history),label: "History"),
            BottomNavigationBarItem(icon: Icon(Icons.task),label: "Daily Tasks"),
+           BottomNavigationBarItem(icon: Icon(Icons.person),label: "Profile"),
       ]),
       body: _pages[_pageIndex],
     );

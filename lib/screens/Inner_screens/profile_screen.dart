@@ -3,10 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/task_provider.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
-  /// 🔥 Calculate streak (consecutive completed days)
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  String? userName;
+  String? userGoal;
+
   int calculateStreak(TaskProvider provider) {
     int streak = 0;
     DateTime current = DateTime.now();
@@ -22,7 +29,6 @@ class ProfileScreen extends StatelessWidget {
     return streak;
   }
 
-  /// 📊 Active days
   int activeDays(TaskProvider provider) {
     final dates = provider.tasks
         .map((t) => DateTime(t.date.year, t.date.month, t.date.day))
@@ -30,17 +36,50 @@ class ProfileScreen extends StatelessWidget {
     return dates.length;
   }
 
+  void _editField(BuildContext context, String title, String? currentValue,
+      Function(String) onSave) {
+    final controller = TextEditingController(text: currentValue);
+
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: Text("Edit $title"),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: "Enter $title",
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                onSave(controller.text.trim());
+                Navigator.pop(context);
+              },
+              child: const Text("Save"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final provider = context.watch<TaskProvider>();
 
-   final totalTasks = provider.tasks.length;
-final completedTasks =
-    provider.tasks.where((t) => t.isCompleted).length;
+    final totalTasks = provider.tasks.length;
+    final completedTasks =
+        provider.tasks.where((t) => t.isCompleted).length;
 
-final double completionPercent =
-    totalTasks == 0 ? 0.0 : (completedTasks / totalTasks).clamp(0.0, 1.0);
+    final double completionPercent =
+        totalTasks == 0 ? 0.0 : (completedTasks / totalTasks).clamp(0.0, 1.0);
 
     final streak = calculateStreak(provider);
     final daysActive = activeDays(provider);
@@ -56,7 +95,6 @@ final double completionPercent =
         child: Column(
           children: [
 
-            /// 👤 USER CARD
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -76,24 +114,38 @@ final double completionPercent =
                     child: Icon(Icons.person, size: 30),
                   ),
                   const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        "Welcome Back 👋",
-                        style: TextStyle(
-                            color: Colors.white, fontSize: 14),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        "Daily Tracker User",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Welcome ",
+                          style: TextStyle(
+                              color: Colors.white, fontSize: 14),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 4),
+                        Text(
+                          (userName == null || userName!.isEmpty)
+                              ? "Add your name"
+                              : userName!,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Colors.white),
+                    onPressed: () {
+                      _editField(context, "Name", userName, (val) {
+                        setState(() => userName = val);
+                      });
+                    },
                   )
                 ],
               ),
@@ -101,34 +153,41 @@ final double completionPercent =
 
             const SizedBox(height: 20),
 
-             Container(
+            Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
+                color: Colors.blue.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.local_fire_department,
-                      color: Colors.orange),
+                  const Icon(Icons.flag, color: Colors.blue),
                   const SizedBox(width: 10),
+
                   Expanded(
                     child: Text(
-                      streak >= 5
-                          ? "Amazing! You're on fire 🔥"
-                          : streak > 0
-                              ? "Keep going! Build your streak 💪"
-                              : "Start today! Small steps matter 🚀",
-                      style: const TextStyle(fontWeight: FontWeight.w500),
+                      (userGoal == null || userGoal!.isEmpty)
+                          ? "Set your goal for upcoming days "
+                          : userGoal!,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w500),
                     ),
                   ),
+
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      _editField(context, "Goal", userGoal, (val) {
+                        setState(() => userGoal = val);
+                      });
+                    },
+                  )
                 ],
               ),
             ),
 
-            SizedBox(height: 20,),
+            const SizedBox(height: 20),
 
-            /// 📊 STATS CARD
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -141,8 +200,8 @@ final double completionPercent =
                     alignment: Alignment.centerLeft,
                     child: Text(
                       "Your Tasks",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -162,7 +221,6 @@ final double completionPercent =
 
             const SizedBox(height: 20),
 
-            /// 📈 PROGRESS CARD
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -175,8 +233,8 @@ final double completionPercent =
                     alignment: Alignment.centerLeft,
                     child: Text(
                       "Completion",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -201,7 +259,6 @@ final double completionPercent =
 
             const SizedBox(height: 20),
 
-            /// ⚙️ SETTINGS
             Container(
               decoration: BoxDecoration(
                 color: theme.cardColor,
@@ -214,13 +271,13 @@ final double completionPercent =
                     leading: const Icon(Icons.settings),
                     title: const Text("Settings"),
                     onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const Settings(),
-                            ),
-                          );
-                        },
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const Settings(),
+                        ),
+                      );
+                    },
                   ),
 
                   const Divider(height: 1),
@@ -229,7 +286,6 @@ final double completionPercent =
                     leading: const Icon(Icons.delete),
                     title: const Text("Clear All Tasks"),
                     onTap: () {
-                      // implement clear logic
                     },
                   ),
 
@@ -249,7 +305,6 @@ final double completionPercent =
     );
   }
 
-  /// 📊 Stat item widget
   Widget _statItem(String label, int value) {
     return Column(
       children: [

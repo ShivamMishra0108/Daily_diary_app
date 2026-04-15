@@ -1,4 +1,5 @@
 import 'package:daily_diary_app/screens/Inner_screens/profile_screen.dart';
+import 'package:daily_diary_app/screens/Inner_screens/settings.dart';
 import 'package:daily_diary_app/widgets/calender_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -157,14 +158,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     
                       child: IconButton(
                         icon: Icon(
-                          Icons.person,
-                          color: Colors.blue.shade200,
+                          Icons.settings,
                         ),
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const ProfileScreen(),
+                              builder: (context) => const Settings(),
                             ),
                           );
                         },
