@@ -14,7 +14,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-
   late Box<Profile> profileBox;
   Profile? profile;
 
@@ -51,8 +50,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return dates.length;
   }
 
-  void _editField(BuildContext context, String title, String? currentValue,
-      Function(String) onSave) {
+  void _editField(
+    BuildContext context,
+    String title,
+    String? currentValue,
+    Function(String) onSave,
+  ) {
     final controller = TextEditingController(text: currentValue);
 
     showDialog(
@@ -62,9 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           title: Text("Edit $title"),
           content: TextField(
             controller: controller,
-            decoration: InputDecoration(
-              hintText: "Enter $title",
-            ),
+            decoration: InputDecoration(hintText: "Enter $title"),
           ),
           actions: [
             TextButton(
@@ -114,25 +115,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final provider = context.watch<TaskProvider>();
 
     final totalTasks = provider.tasks.length;
-    final completedTasks =
-        provider.tasks.where((t) => t.isCompleted).length;
+    final completedTasks = provider.tasks.where((t) => t.isCompleted).length;
 
-    final double completionPercent =
-        totalTasks == 0 ? 0.0 : (completedTasks / totalTasks).clamp(0.0, 1.0);
+    final double completionPercent = totalTasks == 0
+        ? 0.0
+        : (completedTasks / totalTasks).clamp(0.0, 1.0);
 
     final streak = calculateStreak(provider);
     final daysActive = activeDays(provider);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: const Text("Profile"),
-      ),
+      appBar: AppBar(title: const Text("Profile")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -159,8 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         const Text(
                           "Welcome 👋",
-                          style: TextStyle(
-                              color: Colors.white, fontSize: 14),
+                          style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -180,14 +177,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   IconButton(
                     icon: const Icon(Icons.edit, color: Colors.white),
                     onPressed: () {
-                      _editField(
-                        context,
-                        "Name",
-                        profile?.name,
-                        _saveName,
-                      );
+                      _editField(context, "Name", profile?.name, _saveName);
                     },
-                  )
+                  ),
                 ],
               ),
             ),
@@ -210,22 +202,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       profile?.goal.isNotEmpty == true
                           ? profile!.goal
                           : "Set your goal for upcoming days ",
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w500),
+                      style: const TextStyle(fontWeight: FontWeight.w500),
                     ),
                   ),
 
                   IconButton(
                     icon: const Icon(Icons.edit),
                     onPressed: () {
-                      _editField(
-                        context,
-                        "Goal",
-                        profile?.goal,
-                        _saveGoal,
-                      );
+                      _editField(context, "Goal", profile?.goal, _saveGoal);
                     },
-                  )
+                  ),
                 ],
               ),
             ),
@@ -283,94 +269,85 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Column(
                 children: [
-                  ListTile(
-                    leading: const Icon(Icons.settings),
-                    title: const Text("Settings"),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const Settings(),
-                        ),
-                      );
-                    },
-                  ),
+                  
                   Container(
-  decoration: BoxDecoration(
-    color: theme.cardColor,
-    borderRadius: BorderRadius.circular(20),
-  ),
-  child: Column(
-    children: [
+                    decoration: BoxDecoration(
+                      color: theme.cardColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.settings),
+                          title: const Text("Settings"),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Settings(),
+                              ),
+                            );
+                          },
+                        ),
 
-      /// ⚙️ SETTINGS
-      ListTile(
-        leading: const Icon(Icons.settings),
-        title: const Text("Settings"),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const Settings(),
-            ),
-          );
-        },
-      ),
+                        const Divider(height: 1),
 
-      const Divider(height: 1),
+                        ListTile(
+                          leading: const Icon(Icons.delete, color: Colors.red),
+                          title: const Text("Clear All Tasks"),
+                          onTap: () async {
+                            final confirm = await showDialog(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                title: const Text("Confirm"),
+                                content: const Text("Delete all tasks?"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, false),
+                                    child: const Text("Cancel"),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, true),
+                                    child: const Text("Delete"),
+                                  ),
+                                ],
+                              ),
+                            );
 
-      ListTile(
-        leading: const Icon(Icons.delete, color: Colors.red),
-        title: const Text("Clear All Tasks"),
-        onTap: () async {
-          final confirm = await showDialog(
-            context: context,
-            builder: (_) => AlertDialog(
-              title: const Text("Confirm"),
-              content: const Text("Delete all tasks?"),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text("Cancel"),
-                ),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  child: const Text("Delete"),
-                ),
-              ],
-            ),
-          );
+                            if (confirm == true) {
+                              final provider = Provider.of<TaskProvider>(
+                                context,
+                                listen: false,
+                              );
 
-          if (confirm == true) {
-            final provider =
-                Provider.of<TaskProvider>(context, listen: false);
+                              for (var task in provider.tasks) {
+                                await task.delete();
+                              }
 
-            for (var task in provider.tasks) {
-              await task.delete();
-            }
+                              provider.loadTasks();
+                            }
+                          },
+                        ),
 
-            provider.loadTasks();
-          }
-        },
-      ),
+                        const Divider(height: 1),
 
-      const Divider(height: 1),
-
-      ListTile(
-        leading: const Icon(Icons.info),
-        title: const Text("About App"),
-        onTap: () {
-          showAboutDialog(
-            context: context,
-            applicationName: "Daily Diary",
-            applicationVersion: "1.0.0",
-            applicationLegalese: "Made with Flutter 💙",
-          );
-        },
-      ),
-    ],
-  ),
-),
+                        ListTile(
+                          leading: const Icon(Icons.info),
+                          title: const Text("About App"),
+                          onTap: () {
+                            showAboutDialog(
+                              context: context,
+                              applicationName: "Daily Diary",
+                              applicationVersion: "1.0.0",
+                              applicationLegalese: "Made with Flutter 💙",
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -385,8 +362,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         Text(
           value.toString(),
-          style: const TextStyle(
-              fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
         Text(label),
