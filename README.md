@@ -38,30 +38,50 @@ Built with an **offline-first approach** and a clean, user-friendly UI.
 
 ## 📸 Screenshots
 
-### 🏠 Home Screen  
-![Home](assets/screenshots/sc 1.png) 
+###  Home Screen  
+<img width="450" height="1009" alt="sc 1" src="https://github.com/user-attachments/assets/0112b5df-a772-4bee-a5ca-77d2f2f5b19e" />
 
-### 📅 Calendar View  
-![Calendar](assets/screenshots/calendar.png)
 
-### ✅ Tasks Screen  
-![Tasks](assets/screenshots/tasks.png)
+###  Plan screen  
+<img width="450" height="1000" alt="sc 2" src="https://github.com/user-attachments/assets/957a28e0-0b67-4aa6-9ef2-fa7840f1d12e" />
 
-### 📝 Notes Screen  
-![Notes](assets/screenshots/notes.png)
+
+###  Dark Mode  
+<img width="450" height="1000" alt="sc 5" src="https://github.com/user-attachments/assets/16615323-d137-41b1-a62f-b135b2c72e42" />
+
+
+###  Making Plan 
+<img width="450" height="1000" alt="sc 3" src="https://github.com/user-attachments/assets/6298b333-0fb3-49b9-a603-e0c2c87cb4a4" />
+
+
+###  Calendar View  with Plans
+<img width="450" height="1000" alt="sc 4" src="https://github.com/user-attachments/assets/44afb64f-f5a8-4b37-801e-f7e54d8fe63e" />
+
+###  Tasks Screen  
+
+<img width="450" height="1000" alt="sc 6" src="https://github.com/user-attachments/assets/413fbe0e-e03e-4fa0-8c86-0467268e80ec" />
+
+###  Profile Screen  
+
+<img width="450" height="1000" alt="sc 7" src="https://github.com/user-attachments/assets/dabce164-b88e-4f87-962d-c1314d78fbfb" />
+
+
+
 
 ---
 
 ## 📽️ Demo
+https://www.linkedin.com/posts/shivam-mishra-021675382_flutter-appdevelopment-projects-activity-7450404025642082305-jl0F?utm_source=share&utm_medium=member_desktop&rcm=ACoAAF5tQNkB-KSxLPtn7JvMDUlG3nfqUmJWe7c
 
-[![Watch Demo](assets/screenshots/demo_thumbnail.png)](https://your-video-link.com)
-
----
-
-## 📦 APK Download
-
-👉 [Download APK](https://your-apk-link.com)
-
----
 
 ## 📂 Project Structure
+
+LIB
+├───models
+├───providers
+├───screens
+│   ├───Inner_screens
+│   └───nav_screens
+├───services
+├───themes
+└───widgets
